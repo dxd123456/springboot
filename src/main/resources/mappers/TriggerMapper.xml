@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zking.demo.mapper.TriggerMapper">
+
+    <insert id="add" >
+        insert into t_trigger(cron,status,job_name,job_group)
+        values(#{cron}, #{status}, #{job_name}, #{job_group})
+    </insert>
+
+    <select id="getTriggers" resultType="Trigger">
+        select * from t_trigger
+    </select>
+
+</mapper>
