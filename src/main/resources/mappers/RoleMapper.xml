@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zking.demo.mapper.RoleMapper">
+    <!--查询所有-->
+    <select id="getAll" resultType="role" parameterType="string">
+        SELECT rid,rname,state,create_date,update_date from sys_role WHERE
+        <if test="rname != null">
+            rname LIKE '%${rname}%' and
+        </if>
+         state =1
+    </select>
+    <!--根据rid进行查询-->
+    <select id="getByid" resultType="role">
+       SELECT r.rid,r.rname,r.state,r.create_date,r.update_date FROM sys_role r INNER JOIN sys_user_role ur ON
+        ur.role_id = r.rid INNER JOIN sys_user u ON u.id=ur.user_id
+        where u.id=#{value}
+    </select>
+    <!--删除id删除权限-->
+    <delete id="deleteRole" parameterType="int">
+        DELETE  from sys_user_role where user_id=#{value}
+    </delete>
+   <!--给用户添加角色-->
+    <insert id="addRoleByid">
+        INSERT INTO sys_user_role(user_id,role_id)VALUES(#{user.id},#{role.rid})
+    </insert>
+    <!--修改角色状态-->
+    <update id="updateState">
+        UPDATE  sys_role SET state=3 where rid=#{rid}
+    </update>
+    <!--添加角色-->
+    <insert id="addRole" parameterType="role">
+        INSERT  INTO sys_role(rname,state,create_date) values (#{rname},#{state},#{createDate})
+    </insert>
+</mapper>

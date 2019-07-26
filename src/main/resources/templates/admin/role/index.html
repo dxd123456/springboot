@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" th:href="@{/lib/layui/css/layui.css}">
+    <script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+    <script th:src="@{/lib/layui/layui.js}" charset="utf-8"></script>
+    <script type="text/javascript" th:src="@{/js/date.js}"></script>
+    <script type="text/javascript" th:src="@{/js/main.js}"></script>
+    <!-- 注意：如果你直接复制所有代码到本地，上述css路径需要改成你本地的 -->
+</head>
+<body>
+<div class="demoTable">
+    搜索角色名：
+    <div class="layui-inline">
+        <input class="layui-input" name="rname" id="demoReload" autocomplete="off">
+    </div>
+    <button class="layui-btn" data-type="reload">搜索</button>
+    <div class="pull-right screen-btn-group">
+    <button class="layui-btn open-popup" data-title="添加角色" th:attr="data-url=@{/sys/role/add}"  data-size="460,357">
+        <i class="fa fa-plus"></i> 添加</button>
+    </div>
+</div>
+<table class="layui-hide" id="LAY_table_user" lay-filter="user"></table>
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del" th:attr="data-msg='您是否删除'">删除</a>
+    <a  class="layui-btn layui-btn-sm layui-btn-warm" lay-event="auth"  title="给角色添加权限"data-size="600,500" >
+        给角色添加权限
+    </a>
+</script>
+<!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 -->
+<script>
+    layui.use('table', function(){
+        var table = layui.table;
+        //方法级渲染
+        table.render({
+            elem: '#LAY_table_user'
+            ,url: '/sys/role/index'
+            ,cols: [
+                [
+                {checkbox: true, fixed: true}
+                ,{field:'rid', title: 'ID',  sort: true, fixed: true}
+                ,{field:'rname', title: '用户名'}
+                ,{field:'createDate', title: '创建时间',sort: false,fixed:false, templet:'<div>{{ Format(d.createDate,"yyyy-MM-dd hh:mm:ss")}}</div>'}
+                ,{field:'updateDate', title: '修改时间',sort: false,fixed:false, templet:'<div>{{ Format(d.updateDate,"yyyy-MM-dd hh:mm:ss")}}</div>'}
+                ,{fixed: 'right', title:'操作', toolbar: '#barDemo'}
+            ]
+            ]
+            ,id: 'testReload'
+            ,page: true
+            ,height: 310
+        });
+        var $ = layui.$, active = {
+            reload: function(){
+                var demoReload = $('#demoReload');
+                //执行重载
+                table.reload('testReload', {
+                    page: {
+                        curr: 1 //重新从第 1 页开始
+                    }
+                    ,where: {
+                            rname:demoReload.val()
+                    }
+                }, 'data');
+            }
+        };
+        $('.demoTable .layui-btn').on('click', function(){
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+        table.on('tool(user)', function(obj){
+            var data = obj.data;
+            //console.log(obj)
+            if(obj.event === 'del'){
+                var msg =$(this).data('msg')+data.rname;
+                if(msg != null){
+                    layer.confirm(msg + '？',{
+                        title:'提示',
+                        btn:['确认','取消']
+                    },function(){
+                       $.get('/sys/role/status/delete?rid='+data.rid+'',function(result){
+                           $.fn.Messager(result);
+                       });
+                    });
+                }
+            } else if(obj.event === 'auth'){
+                window.layerIndex = layer.open({
+                    type:2,
+                    title: '授权页面',
+                    shadeClose: true,
+                    maxmin: true,
+                    area: ['700px', '600px'],
+                    content: ['/sys/role/auth?rid='+data.rid+'', 'on']
+                });
+            }
+            else  if(obj.event === 'edit'){
+                window.layerIndex = layer.open({
+                    type:2,
+                    title: '修改页面',
+                    shadeClose: true,
+                    maxmin: true,
+                    area: ['700px', '600px'],
+                    content: ['/sys/role/edit?rid='+data.rid+'', 'on']
+                });
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

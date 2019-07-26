@@ -23,7 +23,7 @@ public class TriggerServiceImpl implements TriggerService{
     private TriggerMapper triggerMapper;
     //定时更新任务
     @Override
-    @Scheduled(cron = "0 5 * * * ?")
+    @Scheduled(cron = "0 0 0 23 * ?")
     public void refreshTrigger() throws SchedulerException {
         List<Trigger> jobList = triggerMapper.getTriggers();
         if (jobList != null) {

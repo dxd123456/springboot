@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<link rel="stylesheet" th:href="@{/lib/layui/css/layui.css}">
+<link rel="stylesheet" th:href="@{/css/main.css}"  media="all">
+<script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+<script type="text/javascript" th:src="@{/lib/layui/layui.js}" charset="utf-8"></script>
+<script type="text/javascript" th:src="@{/js/main.js}"></script>
+<style>
+    .layui-input-block{
+        margin-left: 20px;
+        margin-right: 20px;
+        margin-bottom: 70px;
+    }
+    .timo-compile .timo-finally{
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding-bottom: 14px;
+        margin-bottom: 0;
+        background-color: #ffffff;
+    }
+</style>
+<body>
+<div class="layui-form timo-compile">
+    <form th:action="@{/sys/user/role}"method="post">
+        <input type="hidden" name="id" th:value="${userId}"/>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <input th:each="item:${roles}" type="checkbox" name="rid" th:title="${item.rname}"
+                       th:value="${item.rid}"  th:checked="${#sets.contains(authRoles,item)}"  lay-skin="primary">
+            </div>
+        </div>
+        <div class="layui-form-item timo-finally">
+            <button class="layui-btn ajax-submit"><i class="fa fa-check-circle"></i> 保存</button>
+            <button class="layui-btn btn-secondary close-popup"><i class="fa fa-times-circle"></i> 关闭</button>
+        </div>
+    </form>
+</div>
+</body>
+</html>

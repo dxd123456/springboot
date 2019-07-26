@@ -1,12 +1,12 @@
 spring:
-  #ÅäÖÃduridÊý¾ÝÔ´
+  #ï¿½ï¿½ï¿½ï¿½duridï¿½ï¿½ï¿½ï¿½Ô´
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
     username: root
-    password: 123
+    password: 123456
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/t_user
-    #ÅäÖÃduridÁ¬½Ó³Ø²ÎÊý
+    url: jdbc:mysql://47.106.149.46:3306/t_user?useUnicode=true&useSSL=false&amp;characterEncoding=UTF-8
+    #ï¿½ï¿½ï¿½ï¿½duridï¿½ï¿½ï¿½Ó³Ø²ï¿½ï¿½ï¿½
     druid:
       initial-size: 5
       max-active: 100
@@ -37,7 +37,14 @@ spring:
         login-username: admin
         login-password: admin
         allow: 127.0.0.1
-#ÅäÖÃmybatis
+  thymeleaf:
+    prefix: classpath:/templates/
+    check-template-location: true
+    suffix: .html
+    encoding: UTF-8
+    mode: LEGACYHTML5
+    cache: true
+#ï¿½ï¿½ï¿½ï¿½mybatis
 mybatis:
   mapper-locations: classpath*:mappers/*.xml
   type-aliases-package: com.zking.demo.model

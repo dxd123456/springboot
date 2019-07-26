@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" th:href="@{/css/main.css}"  media="all">
+    <script th:src="@{/js/jquery.min.js}"></script>
+    <script type="text/javascript" th:src="@{/lib/layui/layui.js}" charset="utf-8"></script>
+    <script type="text/javascript" th:src="@{/js/main.js}"></script>
+</head>
+<body>
+    <div class="timo-detail-page">
+        <div class="timo-detail-title">基本信息</div>
+        <table class="layui-table timo-detail-table">
+            <tbody>
+            <tr>
+                <th width="100px">用户编号</th>
+                <td th:text="${user.id}"></td>
+                <th width="100px">用户账号</th>
+                <td th:text="${user.name}"></td>
+            </tr>
+            <tr>
+                <th>用户昵称</th>
+                <td th:text="${user.nickname}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

@@ -1,15 +1,20 @@
 package com.zking.demo.shiro;
 
 import com.zking.demo.Service.UserService;
+import com.zking.demo.model.Menu;
+import com.zking.demo.model.Role;
 import com.zking.demo.model.User;
-import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
-import org.apache.shiro.subject.Subject;
+import org.apache.shiro.util.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 public class UserRealm extends AuthorizingRealm {
     @Autowired
@@ -18,35 +23,40 @@ public class UserRealm extends AuthorizingRealm {
      * 执行授权逻辑
      */
     @Override
-    protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection arg0) {
+    protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
         System.out.println("执行授权逻辑");
-
+        User user = (User)principals.fromRealm(this.getClass().getName()).iterator().next();
+        List<String> menusList = new ArrayList<>();
+        List<String> roleNameList = new ArrayList<>();
+        Set<Role> roles = user.getRoles();
+        if(CollectionUtils.isEmpty(roles)){
+            for (Role role : roles) {
+                Set<Menu> menus = role.getMenus();
+                if(CollectionUtils.isEmpty(menus)){
+                    for (Menu menu : menus) {
+                        menusList.add(menu.getPerms());
+                    }
+                }
+            }
+        }
         //给资源进行授权
         SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
-
-        //添加资源的授权字符串
-        //info.addStringPermission("user:add");
-
-        //到数据库查询当前登录用户的授权字符串
-        //获取当前登录用户
-        Subject subject = SecurityUtils.getSubject();
-        User user = (User)subject.getPrincipal();
-        User dbUser = userService.fincById(user.getUserId());
-        info.addStringPermission(dbUser.getPerms());
+        info.addStringPermissions(menusList);
+        info.addRoles(roleNameList);
         return info;
     }
-
-
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException {
         System.out.println("执行认证逻辑");
         UsernamePasswordToken token = (UsernamePasswordToken) authenticationToken;
-        User  user = userService.findByName(token.getUsername());
-         if(null == user){
+        String username = token.getUsername();
+        User user = userService.findByName(username);
+        System.out.println("user====="+user);
+        if(null == user){
              //用户名不存在
              return null;//shiro底层会抛出UnKnowAccountException
          }
          //2.判断密码
-         return new SimpleAuthenticationInfo(user, token.getPassword(),"");
+         return new SimpleAuthenticationInfo(user, user.getPassword(),this.getClass().getName());
     }
 }
